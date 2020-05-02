@@ -32,6 +32,7 @@ add_custom_target(eventing_headers
 set_source_files_properties(${EventingHeaders} PROPERTIES GENERATED TRUE)
 
 add_dependencies(eventing_headers eventprovider)
+set_target_properties(eventing_headers PROPERTIES VS_GLOBAL_IgnoreProjectBuildPass "true")
 
 add_subdirectory(eventpipe)
 

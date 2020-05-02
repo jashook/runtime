@@ -1,0 +1,35 @@
+<!-- This file is used to drive the coreclr build. It is required to force   -->
+<!-- projects with dependencies to not block on their dependencies           -->
+<!-- completing.                                                             -->
+<!--                                                                         -->
+<!-- This file needs to be upadated if there is a vcxproj or csproj that is  -->
+<!-- added as a dependency in our native build which would not normally be   -->
+<!-- captured by the **\*.vcxproj;**\*.csproj wildcards.                     -->
+
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+         DefaultTargets="Build">
+
+    <ItemGroup>
+        <IgnoreProjects Include="CompilerIdCXX.vcxproj;boo.vcxproj;foo.vcxproj;VCTargetsPath.vcxproj;CompilerIdC.vcxproj" />
+        <AllProjects Include="**\*.vcxproj;**\*.csproj"
+                     Exclude="**\ALL_BUILD.vcxproj;**\INSTALL.vcxproj;**\ZERO_CHECK.vcxproj;**\CompilerIdCXX.vcxproj;**\boo.vcxproj;**\foo.vcxproj;**\VCTargetsPath.vcxproj;**\CompilerIdC.vcxproj;**\CompilerIdCSharp.csproj" />
+
+    </ItemGroup>
+
+    <Target Name="Build">
+
+        <MSBuild Projects="@(AllProjects)"
+                 BuildInParallel="true"
+                 Targets="BuildGenerateSources;BuildCompile;BuildLink"
+                 Properties="Platform=$(Platform);Configuration=$(Configuration);BuildPassReferences=true;VCBuildPassReferences=true;GenerateImportLib=true" />
+
+    </Target>
+
+    <Target Name="Clean">
+              <MSBuild Projects="@(AllProjects)"
+                 BuildInParallel="true"
+                 Targets="Clean" />
+    </Target>
+
+</Project>

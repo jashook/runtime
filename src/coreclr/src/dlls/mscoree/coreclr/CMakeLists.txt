@@ -218,6 +218,7 @@ if(CLR_CMAKE_TARGET_WIN32)
 
       if(NOT DEFINED CLR_CROSS_COMPONENTS_BUILD)
           add_custom_target(inject_debug_resources ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/inject_debug_resources.timestamp)
+          set_target_properties(inject_debug_resources PROPERTIES VS_GLOBAL_IgnoreProjectBuildPass "true")
       endif()
     endif()
 

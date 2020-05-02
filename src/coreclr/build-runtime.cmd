@@ -438,21 +438,28 @@ if %__BuildCrossArchNative% EQU 1 (
         goto ExitWithError
     )
 
+    echo "COPY %__ProjectDir%\src\buildpass.proj %__IntermediatesDir%"
+    COPY %__ProjectDir%\src\buildpass.proj %__IntermediatesDir%
+    msbuild /m %__CommonMSBuildArgs% %__IntermediatesDir%\buildpass.proj
+
     if defined __ConfigureOnly goto SkipCrossCompBuild
 
-    set __BuildLogRootName=Cross
-    set "__BuildLog=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.log"
-    set "__BuildWrn=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.wrn"
-    set "__BuildErr=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.err"
-    set "__BinLog=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.binlog"
-    set "__MsbuildLog=/flp:Verbosity=normal;LogFile=!__BuildLog!"
-    set "__MsbuildWrn=/flp1:WarningsOnly;LogFile=!__BuildWrn!"
-    set "__MsbuildErr=/flp2:ErrorsOnly;LogFile=!__BuildErr!"
-    set "__MsbuildBinLog=/bl:!__BinLog!"
-    set "__Logging=!__MsbuildLog! !__MsbuildWrn! !__MsbuildErr! !__MsbuildBinLog!"
+    REM set __BuildLogRootName=Cross
+    REM set "__BuildLog=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.log"
+    REM set "__BuildWrn=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.wrn"
+    REM set "__BuildErr=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.err"
+    REM set "__BinLog=%__LogsDir%\!__BuildLogRootName!_%__TargetOS%__%__BuildArch%__%__BuildType%.binlog"
+    REM set "__MsbuildLog=/flp:Verbosity=normal;LogFile=!__BuildLog!"
+    REM set "__MsbuildWrn=/flp1:WarningsOnly;LogFile=!__BuildWrn!"
+    REM set "__MsbuildErr=/flp2:ErrorsOnly;LogFile=!__BuildErr!"
+    REM set "__MsbuildBinLog=/bl:!__BinLog!"
+    REM set "__Logging=!__MsbuildLog! !__MsbuildWrn! !__MsbuildErr! !__MsbuildBinLog!"
 
-    REM We pass the /m flag directly to MSBuild so that we can get both MSBuild and CL parallelism, which is fastest for our builds.
-    "%CMakePath%" --build %__CrossCompIntermediatesDir% --target install --config %__BuildType% -- /nologo /m !__Logging!
+    REM REM We pass the /m flag directly to MSBuild so that we can get both MSBuild and CL parallelism, which is fastest for our builds.
+    REM "%CMakePath%" --build %__CrossCompIntermediatesDir% --target install --config %__BuildType% -- /nologo /m !__Logging!
+
+    COPY %__ProjectDir%\src\coreclr\buildpass.proj %__IntermediatesDir%
+    msbuild /m %__CommonMSBuildArgs% %__IntermediatesDir%\buildpass.proj
 
     if not !errorlevel! == 0 (
         set __exitCode=!errorlevel!
@@ -521,6 +528,9 @@ if %__BuildNative% EQU 1 (
         goto ExitWithError
     )
 
+    echo "COPY %__ProjectDir%\src\buildpass.proj %__IntermediatesDir%"
+    COPY %__ProjectDir%\src\buildpass.proj %__IntermediatesDir%
+
     if defined __ConfigureOnly goto SkipNativeBuild
 
     set __BuildLogRootName=CoreCLR
@@ -535,7 +545,10 @@ if %__BuildNative% EQU 1 (
     set "__Logging=!__MsbuildLog! !__MsbuildWrn! !__MsbuildErr! !__MsbuildBinLog!"
 
     REM We pass the /m flag directly to MSBuild so that we can get both MSBuild and CL parallelism, which is fastest for our builds.
-    "%CMakePath%" --build %__IntermediatesDir% --target install --config %__BuildType% -- /nologo /m !__Logging!
+    REM "%CMakePath%" --build %__IntermediatesDir% --target install --config %__BuildType% -- /nologo /m !__Logging!
+
+    REM Using buildpass
+    msbuild /m %__CommonMSBuildArgs% /bl %__IntermediatesDir%\buildpass.proj
 
     if not !errorlevel! == 0 (
         set __exitCode=!errorlevel!
