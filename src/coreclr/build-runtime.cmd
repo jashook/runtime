@@ -548,7 +548,10 @@ if %__BuildNative% EQU 1 (
     REM "%CMakePath%" --build %__IntermediatesDir% --target install --config %__BuildType% -- /nologo /m !__Logging!
 
     REM Using buildpass
-    msbuild /m %__CommonMSBuildArgs% /bl %__IntermediatesDir%\buildpass.proj
+    msbuild /m %__CommonMSBuildArgs% %__IntermediatesDir%\buildpass.proj
+
+    echo "cmake -DBUILD_TYPE=%__BuildType% -p %__IntermediatesDir%\cmake_install.cmake"
+    cmake -DBUILD_TYPE=%__BuildType% -P %__IntermediatesDir%\cmake_install.cmake
 
     if not !errorlevel! == 0 (
         set __exitCode=!errorlevel!
